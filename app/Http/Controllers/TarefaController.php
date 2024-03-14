@@ -19,7 +19,7 @@ class TarefaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {   
+    {
         $user_id = auth()->user()->id;
         $tarefas = Tarefa::where('user_id', $user_id)->paginate(10);
         return view('tarefa.index', ['tarefas' => $tarefas]);
@@ -70,7 +70,11 @@ class TarefaController extends Controller
      */
     public function edit(Tarefa $tarefa)
     {
-        //
+        if (auth()->user()->id == $tarefa->user_id) {
+            return view('tarefa.edit', ['tarefa' => $tarefa]);
+        } else {
+            return view('acesso-negado');
+        }
     }
 
     /**
@@ -82,7 +86,12 @@ class TarefaController extends Controller
      */
     public function update(Request $request, Tarefa $tarefa)
     {
-        //
+        if (auth()->user()->id == $tarefa->user_id) {
+            $tarefa->update($request->all());
+            return redirect()->route('tarefa.show', ['tarefa' => $tarefa->id]);
+        } else {
+            return view('acesso-negado');
+        }
     }
 
     /**
